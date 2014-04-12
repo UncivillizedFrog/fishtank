@@ -118,7 +118,7 @@ def configinitset():
     global dim_Downtimehr
     global PWM_min
     global dim_Cyclesecs
-    if checked == 1 and config.getboolean('LightConfig', 'true'):
+    if checked == 1 and config.getboolean('LightConfig', 'configinit'):
         dim_Uptimehr = config.getint('LightConfig', 'uptime')
         dim_Downtimehr = config.getint('LightConfig', 'downtime')
         PWM_min = config.getint('LightConfig', 'pwminit')
