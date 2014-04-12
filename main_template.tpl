@@ -75,7 +75,7 @@ Light cycle shutdown time (0-23): <input class="topcoat-input" type="text" name=
 <form action="save_config" method="put">
   <div class="topcoat-button-bar">
     <div class="topcoat-button-bar__item">
-      <button formaction="turn_on" class="topcoat-button-bar__button">Write Current Settings to .CFG</button>
+      <button formaction="save_config" class="topcoat-button-bar__button">Write Current Settings to .CFG</button>
     </div>
   </div>
 </form>
