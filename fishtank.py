@@ -259,14 +259,14 @@ def set_dim():
 @post ("/set_brightness")
 def set_brightness():
         global PWM_min
-        PWM_min = int(request.forms.get("pwm_min"))
+        PWM_min = float(request.forms.get("pwm_min"))
         redirect("/")
 
 @post ("/set_uptime")
 def set_uptime():
     global dim_Uptimehr
     sched.unschedule_func(scheddimCycleUp())
-    dim_Uptimehr = int(request.forms.get("dimup_time"))
+    dim_Uptimehr = float(request.forms.get("dimup_time"))
     sched.add_cron_job(scheddimCycleUp,  hour=dim_Uptimehr)
     redirect("/")
 
@@ -274,7 +274,7 @@ def set_uptime():
 def set_downtime():
     global dim_Downtimehr
     sched.unschedule_func(scheddimCycleUp())
-    dim_Downtimehr = int(request.forms.get("dimdown_time"))
+    dim_Downtimehr = float(request.forms.get("dimdown_time"))
     sched.add_cron_job(scheddimCycleDown, hour=dim_Downtimehr)
     redirect("/")
 
