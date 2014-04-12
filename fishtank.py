@@ -11,7 +11,7 @@ if USE_FIRMATA:
 elif USE_NANPY:
     from nanpy import Arduino
     from nanpy.arduinotree import ArduinoTree
-
+import ConfigParser
 import datetime
 import sys
 import time
@@ -87,14 +87,23 @@ def arduinoPinwriteout(outpin, PWM_Levelout):
     elif USE_NANPY:
         Arduino.analogWrite(targetpin, writeVAR)
 
-PWM_min = 50
+
 PWM_max = 255
 PWM_level = 255
  
 dim_Ontimesecs = 900
 dim_Cyclesecs = dim_Ontimesecs/PWM_max
-dim_Uptimehr = 8
-dim_Downtimehr= 19
+
+
+
+config = ConfigParser.RawConfigParser()
+config.add_section('LightConfig')
+
+PWM_min = config.getint('LightConfig', 'pwminit')
+dim_Ontimesecs = config.getint('LightConfig', 'cyclesecs')
+dim_Uptimehr = config.getint('LightConfig', 'uptime')
+dim_Downtimehr= config.getint('LightConfig', 'downtime')
+
 #print 'cycle runs 15 minutes either way. Set the two 15 min apart to avoid clipping'
  
  
@@ -134,7 +143,6 @@ def signalmod_PWM(modAmount):
 sched = Scheduler()
  
 sched.add_interval_job(lambda: arduinoPinwriteout(boardPin, PWM_level), seconds = 1)
-
 sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin1, PWM_level), seconds = 1)
 sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin2, PWM_level), seconds = 1)
 sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin3, PWM_level), seconds = 1)
@@ -248,6 +256,15 @@ def dim_off():
         netdimCycleDown()
     redirect("/")
 
+@route ("/save_config")
+def save_config():
+    config.set('LightConfig', 'uptime', str(dim_Uptimehr))
+    config.set('LightConfig', 'downtime', str(dim_Downtimehr))
+    config.set('LightConfig', 'pwminit', str(PWM_min))
+    config.set('LightConfig', 'cyclesecs', str(dim_Ontimesecs))
+    with open('tanksettings.cfg', 'wb') as configfile:
+    config.write(configfile)
+    redirect ("/")
 @post("/set_dim")
 def set_dim():
     global dim_Ontimesecs, dim_Cyclesecs
@@ -265,7 +282,7 @@ def set_brightness():
 @post ("/set_uptime")
 def set_uptime():
     global dim_Uptimehr
-    sched.unschedule_func(scheddimCycleUp)
+    sched.unschedule_func(scheddimCycleUp())
     dim_Uptimehr = int(request.forms.get("dimup_time"))
     sched.add_cron_job(scheddimCycleUp,  hour=dim_Uptimehr)
     redirect("/")
@@ -273,7 +290,7 @@ def set_uptime():
 @post ("/set_downtime")
 def set_downtime():
     global dim_Downtimehr
-    sched.unschedule_func(scheddimCycleDown)
+    sched.unschedule_func(scheddimCycleDown())
     dim_Downtimehr = int(request.forms.get("dimdown_time"))
     sched.add_cron_job(scheddimCycleDown, hour=dim_Downtimehr)
     redirect("/")
