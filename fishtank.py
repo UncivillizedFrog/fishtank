@@ -263,7 +263,7 @@ def save_config():
     config.set('LightConfig', 'pwminit', str(PWM_min))
     config.set('LightConfig', 'cyclesecs', str(dim_Ontimesecs))
     with open('tanksettings.cfg', 'wb') as configfile:
-    config.write(configfile)
+        config.write(configfile)
     redirect ("/")
 @post("/set_dim")
 def set_dim():
