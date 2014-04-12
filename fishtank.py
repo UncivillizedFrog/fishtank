@@ -265,7 +265,7 @@ def set_brightness():
 @post ("/set_uptime")
 def set_uptime():
     global dim_Uptimehr
-    sched.unschedule_func(scheddimCycleUp())
+    sched.unschedule_func(scheddimCycleUp)
     dim_Uptimehr = int(request.forms.get("dimup_time"))
     sched.add_cron_job(scheddimCycleUp,  hour=dim_Uptimehr)
     redirect("/")
@@ -273,7 +273,7 @@ def set_uptime():
 @post ("/set_downtime")
 def set_downtime():
     global dim_Downtimehr
-    sched.unschedule_func(scheddimCycleDown())
+    sched.unschedule_func(scheddimCycleDown)
     dim_Downtimehr = int(request.forms.get("dimdown_time"))
     sched.add_cron_job(scheddimCycleDown, hour=dim_Downtimehr)
     redirect("/")
