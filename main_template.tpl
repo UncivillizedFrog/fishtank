@@ -50,6 +50,7 @@ The current pwm level is {{current_level}}, dim time is {{dim_time}}
   </div>
 </form>
 
+
 <form action="set_dim" method="post">
 Dim Time(secs): <input class="topcoat-input" type="text" name="dim_time">
 <button class="topcoat-button">Set</button>
@@ -69,5 +70,15 @@ Light cycle startup time (0-23): <input class="topcoat-input" type="text" name="
 Light cycle shutdown time (0-23): <input class="topcoat-input" type="text" name="dimdown_time">
 <button class="topcoat-button">Set</button>
 </form>
+
+
+<form action="save_config" method="put">
+  <div class="topcoat-button-bar">
+    <div class="topcoat-button-bar__item">
+      <button formaction="turn_on" class="topcoat-button-bar__button">Write Current Settings to .CFG</button>
+    </div>
+  </div>
+</form>
+
 
 </body>
