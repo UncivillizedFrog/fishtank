@@ -106,11 +106,13 @@ def configinitcheck():
         return
     else:
         config.add_section('LightConfig')
+    if config.has_option('LightConfig', 'uptime') == 0:
         config.set('LightConfig', 'configinit', 'true')
         config.set('LightConfig', 'uptime', '7')
         config.set('LightConfig', 'downtime', '23')
         config.set('LightConfig', 'pwminit', '50')
         config.set('LightConfig', 'cyclesecs', '900')
+
 configinitcheck()
 
 def configinitset():
