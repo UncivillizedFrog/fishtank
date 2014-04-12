@@ -97,23 +97,19 @@ dim_Cyclesecs = dim_Ontimesecs/PWM_max
 
 
 config = ConfigParser.RawConfigParser()
-config.add_section('LightConfig')
-if config.has_option('LightConfig', 'pwminit'):
-    PWM_min = config.getint('LightConfig', 'pwminit')
-    dim_Ontimesecs = config.getint('LightConfig', 'cyclesecs')
-    dim_Uptimehr = config.getint('LightConfig', 'uptime')
-    dim_Downtimehr= config.getint('LightConfig', 'downtime')
+config.readfp(open('tanksettings.cfg'))
 
-#print 'cycle runs 15 minutes either way. Set the two 15 min apart to avoid clipping'
- 
- 
-##only run this when hdmi is connected
-#dim_UptimehrOverride = input('Start time (hr)')
-#dim_UptimeminOverride = input('Start time (min)')
-#dim_DowntimehrOverride = input('End time (hr)')
-#dim_DowntimeminOverride = input('End time (min)')
-##
- 
+def configinitcheck():
+    if config.has_section('LightConfig'):
+        return
+    else:
+        config.add_section('LightConfig')
+        config.set('LightConfig', 'uptime', 'null')
+        config.set('LightConfig', 'downtime', 'null')
+        config.set('LightConfig', 'pwminit', 'null')
+        config.set('LightConfig', 'cyclesecs', 'null')
+configinitcheck()
+
 global modding
 modding = 0
  
