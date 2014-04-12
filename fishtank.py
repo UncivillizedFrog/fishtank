@@ -98,11 +98,11 @@ dim_Cyclesecs = dim_Ontimesecs/PWM_max
 
 config = ConfigParser.RawConfigParser()
 config.add_section('LightConfig')
-
-PWM_min = config.getint('LightConfig', 'pwminit')
-dim_Ontimesecs = config.getint('LightConfig', 'cyclesecs')
-dim_Uptimehr = config.getint('LightConfig', 'uptime')
-dim_Downtimehr= config.getint('LightConfig', 'downtime')
+if config.has_option('LightConfig', 'pwminit'):
+    PWM_min = config.getint('LightConfig', 'pwminit')
+    dim_Ontimesecs = config.getint('LightConfig', 'cyclesecs')
+    dim_Uptimehr = config.getint('LightConfig', 'uptime')
+    dim_Downtimehr= config.getint('LightConfig', 'downtime')
 
 #print 'cycle runs 15 minutes either way. Set the two 15 min apart to avoid clipping'
  
