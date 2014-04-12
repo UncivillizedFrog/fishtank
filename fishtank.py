@@ -94,21 +94,38 @@ PWM_level = 255
 dim_Ontimesecs = 900
 dim_Cyclesecs = dim_Ontimesecs/PWM_max
 
-
+checked = 0
 
 config = ConfigParser.RawConfigParser()
 config.readfp(open('tanksettings.cfg'))
 
 def configinitcheck():
     if config.has_section('LightConfig'):
+        global checked
+        checked = 1
         return
     else:
         config.add_section('LightConfig')
-        config.set('LightConfig', 'uptime', 'null')
-        config.set('LightConfig', 'downtime', 'null')
-        config.set('LightConfig', 'pwminit', 'null')
-        config.set('LightConfig', 'cyclesecs', 'null')
+        config.set('LightConfig', 'configinit', 'true')
+        config.set('LightConfig', 'uptime', '7')
+        config.set('LightConfig', 'downtime', '23')
+        config.set('LightConfig', 'pwminit', '50')
+        config.set('LightConfig', 'cyclesecs', '900')
 configinitcheck()
+
+def configinitset():
+    global dim_Uptimehr
+    global dim_Downtimehr
+    global PWM_min
+    global dim_Cyclesecs
+    if checked == 1 and config.getboolean('LightConfig', 'true'):
+        dim_Uptimehr = config.getint('LightConfig', 'uptime')
+        dim_Downtimehr = config.getint('LightConfig', 'downtime')
+        PWM_min = config.getint('LightConfig', 'pwminit')
+        dim_Cyclesecs = config.getint('LightConfig', 'cyclesecs')
+    else:
+        return
+configinitset()
 
 global modding
 modding = 0
