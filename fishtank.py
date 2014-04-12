@@ -13,7 +13,6 @@ elif USE_NANPY:
     from nanpy.arduinotree import ArduinoTree
 
 import datetime
-import nanpy
 import sys
 import time
 from time import sleep
@@ -47,6 +46,7 @@ if USE_FIRMATA:
     pwmPin6 = board.get_pin("d:7:p")
     pwmPin7 = board.get_pin("d:8:p")
     pwmPin8 = board.get_pin("d:9:p")
+    
 else:
     boardPin = 13
     pwmPin1 = 2
@@ -82,21 +82,19 @@ def arduinoPinwriteout(outpin, PWM_Levelout):
     targetpin = outpin
     global writeVAR
     writeVAR = PWM_Levelout
-    if outpin == boardPin:
-        print writeVAR
     if USE_FIRMATA:
         outpin.write(writeVAR / 255.0)
     elif USE_NANPY:
         Arduino.analogWrite(targetpin, writeVAR)
 
-PWM_min = 100
+PWM_min = 50
 PWM_max = 255
 PWM_level = 255
  
 dim_Ontimesecs = 900
 dim_Cyclesecs = dim_Ontimesecs/PWM_max
 dim_Uptimehr = 8
-dim_Downtimehr= 23
+dim_Downtimehr= 19
 #print 'cycle runs 15 minutes either way. Set the two 15 min apart to avoid clipping'
  
  
@@ -107,21 +105,8 @@ dim_Downtimehr= 23
 #dim_DowntimeminOverride = input('End time (min)')
 ##
  
- 
+global modding
 modding = 0
-
-def timestatuscheck():
-    return
-    global PWM_level
-    if modding == 0:
-        now = time.localtime()
-        if (now.tm_hour < dim_Uptimehr):
-            PWM_level = PWM_max
-        elif (now.tm_hour >= dim_Uptimehr) and (now.tm_hour <= dim_Downtimehr):
-            PWM_level = PWM_min
-        elif (now.tm_hour > dim_Downtimehr):
-            PWM_level = PWM_max
-       
  
 def signalmod_PWM(modAmount):
     global PWM_level
@@ -136,21 +121,20 @@ def signalmod_PWM(modAmount):
     if modTester == -1:
         if PWM_level <= PWM_min:
             PWM_level = PWM_min
+            modding = 0
         elif PWM_level > PWM_min:
             PWM_level += (modAmount)
     elif modTester == 1:
         if PWM_level >= PWM_max:
             PWM_level = PWM_max
+            modding = 0
         elif PWM_level <= PWM_max:
             PWM_level += (modAmount)
 
 sched = Scheduler()
  
-sched.add_interval_job(timestatuscheck, seconds = 1)
- 
- 
 sched.add_interval_job(lambda: arduinoPinwriteout(boardPin, PWM_level), seconds = 1)
- 
+
 sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin1, PWM_level), seconds = 1)
 sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin2, PWM_level), seconds = 1)
 sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin3, PWM_level), seconds = 1)
@@ -159,19 +143,52 @@ sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin5, PWM_level), seconds =
 sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin6, PWM_level), seconds = 1)
 sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin7, PWM_level), seconds = 1)
 sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin8, PWM_level), seconds = 1)
- 
- 
- 
-def testdimCycleUp():
-    sched.add_interval_job(lambda: signalmod_PWM(-1), seconds=dim_Cyclesecs, max_runs=(PWM_max-PWM_min) + 1)
+
+global net_Override
+net_Override = 0
+
+def timestatuscheck():
+    global localTime
+    localTime = time.localtime()   
+    global PWM_level
+    if net_Override == 1:
+        print "%d %02d:%02d" % (PWM_level, localTime.tm_hour, localTime.tm_min)
+        return
+    elif modding == 0:
+        if (localTime.tm_hour < dim_Uptimehr):
+            PWM_level = PWM_max
+        elif (localTime.tm_hour >= dim_Uptimehr) and (localTime.tm_hour < dim_Downtimehr) and (localTime.tm_min > 0):
+            PWM_level = PWM_min
+        elif (localTime.tm_hour >= dim_Downtimehr) and (localTime.tm_min > 0):
+            PWM_level = PWM_max
+    print "%d %02d:%02d" % (PWM_level, localTime.tm_hour, localTime.tm_min)
+
+def schedsignalmod_PWM():
+    signalmod_PWM(modAmount)
+
+def scheddimCycleUp():
+    global modAmount
+    modAmount = -1
+    sched.add_interval_job(schedsignalmod_PWM, seconds=dim_Cyclesecs, max_runs=(PWM_max-PWM_min) + 1)
    
-def testdimCycleDown():
-    sched.add_interval_job(lambda: signalmod_PWM(1), seconds=dim_Cyclesecs, max_runs=(PWM_max-PWM_min) + 1)
- 
- 
-sched.add_cron_job(testdimCycleUp,  hour=dim_Uptimehr)
- 
-sched.add_cron_job(testdimCycleDown,  hour=dim_Downtimehr)
+def scheddimCycleDown():
+    global modAmount
+    modAmount = 1
+    sched.add_interval_job(schedsignalmod_PWM, seconds=dim_Cyclesecs, max_runs=(PWM_max-PWM_min) + 1)
+
+def netdimCycleUp():
+    global modAmount
+    modAmount = -1
+    sched.add_interval_job(schedsignalmod_PWM, seconds=dim_Cyclesecs, max_runs=(PWM_max-PWM_min) + 1)
+   
+def netdimCycleDown():
+    global modAmount
+    modAmount = 1
+    sched.add_interval_job(schedsignalmod_PWM, seconds=dim_Cyclesecs, max_runs=(PWM_max-PWM_min) + 1)
+
+sched.add_cron_job(scheddimCycleUp,  hour=dim_Uptimehr)
+sched.add_interval_job(timestatuscheck, seconds = 10)
+sched.add_cron_job(scheddimCycleDown,  hour=dim_Downtimehr)
 sched.start()
 sched.print_jobs()
 
@@ -179,28 +196,56 @@ sched.print_jobs()
 def default():
     return template("main_template", current_level=PWM_level, modding=modding, dim_time=dim_Ontimesecs)
 
+@route ("/release_override")
+def release_override():
+    global modding
+    global net_Override
+    net_Override = 0
+    if modding == 1:
+        sched.unschedule_func(schedsignalmod_PWM)
+        modding = 0
+    redirect("/")
+
+@route ("/engage_override")
+def engage_override():
+    global net_Override
+    net_Override = 1
+    redirect("/")
+
 @route("/turn_on")
 def turn_on():
+    if net_Override == 0:
+        redirect("/")
+        return
     global PWM_level
     PWM_level = PWM_min
     redirect("/")
 
 @route("/turn_off")
 def turn_off():
-    global PWM_level
-    PWM_level = PWM_max
-    redirect("/")
+   if net_Override == 0:
+        redirect("/")
+        return
+   global PWM_level
+   PWM_level = PWM_max
+   redirect("/")
 
 @route("/dim_on")
 def dim_on():
+    if net_Override == 0:
+        redirect("/") 
+        return
     if PWM_level == PWM_max:
-        testdimCycleUp()
+        netdimCycleUp()
     redirect("/")
 
 @route("/dim_off")
 def dim_off():
+    if net_Override == 0:
+        redirect("/") 
+        return
     if PWM_level == PWM_min:
-        testdimCycleDown()
+        netdimCycleDown()
     redirect("/")
 
 @post("/set_dim")
@@ -209,6 +254,28 @@ def set_dim():
     print request.forms.get("dim_time")
     dim_Ontimesecs = int(request.forms.get("dim_time"))
     dim_Cyclesecs = float(dim_Ontimesecs)/(PWM_max - PWM_min)
+    redirect("/")
+
+@post ("/set_brightness")
+def set_brightness():
+        global PWM_min
+        PWM_min = int(request.forms.get("pwm_min"))
+        redirect("/")
+
+@post ("/set_uptime")
+def set_uptime():
+    global dim_Uptimehr
+    sched.unschedule_func(scheddimCycleUp())
+    dim_Uptimehr = int(request.forms.get("dimup_time"))
+    sched.add_cron_job(scheddimCycleUp,  hour=dim_Uptimehr)
+    redirect("/")
+
+@post ("/set_downtime")
+def set_downtime():
+    global dim_Downtimehr
+    sched.unschedule_func(scheddimCycleUp())
+    dim_Downtimehr = int(request.forms.get("dimdown_time"))
+    sched.add_cron_job(scheddimCycleDown, hour=dim_Downtimehr)
     redirect("/")
 
 @route('/static/:path#.+#', name='static')
