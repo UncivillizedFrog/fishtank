@@ -273,7 +273,7 @@ def set_uptime():
 @post ("/set_downtime")
 def set_downtime():
     global dim_Downtimehr
-    sched.unschedule_func(scheddimCycleUp())
+    sched.unschedule_func(scheddimCycleDown())
     dim_Downtimehr = int(request.forms.get("dimdown_time"))
     sched.add_cron_job(scheddimCycleDown, hour=dim_Downtimehr)
     redirect("/")
