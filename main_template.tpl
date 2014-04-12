@@ -53,19 +53,21 @@ The current pwm level is {{current_level}}, dim time is {{dim_time}}
 <form action="set_dim" method="post">
 Dim Time(secs): <input class="topcoat-input" type="text" name="dim_time">
 <button class="topcoat-button">Set</button>
+</form>
 
 <form action="set_brightness" method="post">
 Maximum light brightness: <input class="topcoat-input" type="text" name="pwm_min">
 <button class="topcoat-button">Set</button>
+</form>
 
 <form action="set_uptime" method="post">
 Light cycle startup time (0-23): <input class="topcoat-input" type="text" name="dimup_time">
 <button class="topcoat-button">Set</button>
+</form>
 
 <form action="set_downtime" method="post">
 Light cycle shutdown time (0-23): <input class="topcoat-input" type="text" name="dimdown_time">
 <button class="topcoat-button">Set</button>
-
 </form>
 
 </body>
