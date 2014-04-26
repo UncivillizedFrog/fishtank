@@ -95,7 +95,7 @@ def arduinoPinwriteoutInd(outpin, PWM_Levelout):
     elif USE_NANPY:
         Arduino.analogWrite(targetpin, writeVAR)
 
-
+global PWM_min
 PWM_max = 255
 PWM_level = 255
  
@@ -136,6 +136,7 @@ def configinitset():
     else:
         return
 configinitset()
+
 
  
 def signalmod_PWM(modAmount):
