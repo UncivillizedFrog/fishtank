@@ -100,7 +100,7 @@ PWM_max = 255
 PWM_level = 255
  
 dim_Ontimesecs = 900
-dim_Cyclesecs = dim_Ontimesecs/PWM_max
+dim_Cyclesecs = dim_Ontimesecs/(PWM_max-PWM_min)
 
 checked = 0
 
@@ -137,7 +137,6 @@ def configinitset():
         return
 configinitset()
 
-global modding
 modding = 0
  
 def signalmod_PWM(modAmount):
