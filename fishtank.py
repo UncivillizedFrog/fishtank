@@ -173,6 +173,7 @@ global net_Override
 net_Override = 0
 
 def timestatuscheck():
+    global modding
     global localTime
     localTime = time.localtime()   
     global PWM_level
