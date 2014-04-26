@@ -76,8 +76,16 @@ PWM_Levelout = 0
 outpin = 0
 writeVAR = 0
  
- 
-def arduinoPinwriteout(outpin, PWM_Levelout):
+def arduinoPinwriteoutAll(PWM_Levelout):
+   arduinoPinwriteoutInd(pwmPin1,PWM_level)
+   arduinoPinwriteoutInd(pwmPin2,PWM_level)
+   arduinoPinwriteoutInd(pwmPin3,PWM_level)
+   arduinoPinwriteoutInd(pwmPin4,PWM_level)
+   arduinoPinwriteoutInd(pwmPin5,PWM_level)
+   arduinoPinwriteoutInd(pwmPin6,PWM_level)
+   arduinoPinwriteoutInd(pwmPin7,PWM_level)
+   arduinoPinwriteoutInd(pwmPin8,PWM_level)
+def arduinoPinwriteoutInd(outpin, PWM_Levelout):
     global targetpin
     targetpin = outpin
     global writeVAR
@@ -157,15 +165,7 @@ def signalmod_PWM(modAmount):
 
 sched = Scheduler()
  
-sched.add_interval_job(lambda: arduinoPinwriteout(boardPin, PWM_level), seconds = 1)
-sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin1, PWM_level), seconds = 1)
-sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin2, PWM_level), seconds = 1)
-sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin3, PWM_level), seconds = 1)
-sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin4, PWM_level), seconds = 1)
-sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin5, PWM_level), seconds = 1)
-sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin6, PWM_level), seconds = 1)
-sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin7, PWM_level), seconds = 1)
-sched.add_interval_job(lambda: arduinoPinwriteout(pwmPin8, PWM_level), seconds = 1)
+sched.add_interval_job(lambda: arduinoPinwriteoutAll(boardPin, PWM_level), seconds = 1)
 
 global net_Override
 net_Override = 0
