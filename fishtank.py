@@ -94,6 +94,12 @@ def arduinoPinwriteoutInd(outpin, PWM_Levelout):
         outpin.write(writeVAR / 255.0)
     elif USE_NANPY:
         Arduino.analogWrite(targetpin, writeVAR)
+
+
+config = ConfigParser.RawConfigParser()
+config.readfp(open('tanksettings.cfg'))
+checked = 0
+
 def configinitcheck():
     if config.has_section('LightConfig'):
         global checked
@@ -132,11 +138,6 @@ PWM_level = 255
  
 dim_Ontimesecs = 900
 dim_Cyclesecs = dim_Ontimesecs/(PWM_max-PWM_min)
-
-checked = 0
-
-config = ConfigParser.RawConfigParser()
-config.readfp(open('tanksettings.cfg'))
 
 
 
