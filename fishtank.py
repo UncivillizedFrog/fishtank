@@ -137,7 +137,6 @@ def configinitset():
         return
 configinitset()
 
-modding = 0
  
 def signalmod_PWM(modAmount):
     global PWM_level
