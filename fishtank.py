@@ -76,7 +76,7 @@ PWM_Levelout = 0
 outpin = 0
 writeVAR = 0
  
-def arduinoPinwriteoutAll(PWM_Levelout):
+def arduinoPinwriteoutAll():
    arduinoPinwriteoutInd(pwmPin1,PWM_level)
    arduinoPinwriteoutInd(pwmPin2,PWM_level)
    arduinoPinwriteoutInd(pwmPin3,PWM_level)
@@ -165,7 +165,7 @@ def signalmod_PWM(modAmount):
 
 sched = Scheduler()
  
-sched.add_interval_job(lambda: arduinoPinwriteoutAll(boardPin, PWM_level), seconds = 1)
+sched.add_interval_job(arduinoPinwriteoutAll, seconds = 1)
 
 global net_Override
 net_Override = 0
