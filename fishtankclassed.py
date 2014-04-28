@@ -42,14 +42,14 @@ class LED:
         self.PWM_level = 255
         self.modCount = 0
         self.PWM_min = 30
-        
+
         self.sched.add_interval_job(self.arduinoPinwriteoutAll, seconds = 1)
         self.sched.add_interval_job(self.timestatuscheck, seconds = 10)
         self.sched.add_cron_job(self.scheddimCycleUp,  hour=self.dim_Uptimehr)
         self.sched.add_cron_job(self.scheddimCycleDown,  hour=self.dim_Downtimehr)
         self.sched.start()
         self.sched.print_jobs()
-        
+
         if LED.config.has_section('LightConfig'):
             pass
         else:
@@ -122,19 +122,19 @@ class LED:
 
     def scheddimCycleUp(self):
         self.modCount = -1
-        sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
 
     def scheddimCycleDown(self):
         self.modCount = 1
-        sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
 
     def netdimCycleUp(self):
         self.modCount = -1
-        sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
 
     def netdimCycleDown(self):
         self.modCount = 1
-        sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
 
 
 STATE=LED()
