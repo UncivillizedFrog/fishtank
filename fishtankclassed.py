@@ -96,6 +96,7 @@ class LED:
                self.PWM_level += modAmount
 
     def timestatuscheck(self):
+        self.localTime=time.localtime()
         if self.net_Override == 1:
             print "%d %02d:%02d" % (self.PWM_level, self.localTime.tm_hour, self.localTime.tm_min)
             return
