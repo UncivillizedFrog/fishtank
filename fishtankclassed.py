@@ -118,7 +118,7 @@ class LED:
         print "%d %02d:%02d" % (self.PWM_level, self.localTime.tm_hour, self.localTime.tm_min)
     def schedsignalmod_PWM(self):
 
-        LED.signalmod_PWM(self, self.modCount)
+        self.signalmod_PWM(self.modCount)
 
     def scheddimCycleUp(self):
         self.modCount = -1
