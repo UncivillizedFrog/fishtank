@@ -43,13 +43,6 @@ class LED:
         self.modCount = 0
         self.PWM_min = 30
 
-        self.sched.add_interval_job(self.arduinoPinwriteoutAll, seconds = 1)
-        self.sched.add_interval_job(self.timestatuscheck, seconds = 10)
-        self.sched.add_cron_job(self.scheddimCycleUp,  hour=self.dim_Uptimehr)
-        self.sched.add_cron_job(self.scheddimCycleDown,  hour=self.dim_Downtimehr)
-        self.sched.start()
-        self.sched.print_jobs()
-
         if LED.config.has_section('LightConfig'):
             pass
         else:
@@ -68,6 +61,13 @@ class LED:
             self.PWM_min = LED.config.getint('LightConfig', 'pwminit')
             self.dim_Cyclesecs = LED.config.getint('LightConfig', 'cyclesecs')
             self.PWM_max = 255
+            
+        self.sched.add_interval_job(self.arduinoPinwriteoutAll, seconds = 1)
+        self.sched.add_interval_job(self.timestatuscheck, seconds = 10)
+        self.sched.add_cron_job(self.scheddimCycleUp,  hour=self.dim_Uptimehr)
+        self.sched.add_cron_job(self.scheddimCycleDown,  hour=self.dim_Downtimehr)
+        self.sched.start()
+        self.sched.print_jobs()
     def arduinoPinwriteoutAll(self):
         self.arduinoPinwriteoutInd(self.pwmPin1,self.PWM_level)
         self.arduinoPinwriteoutInd(self.pwmPin2,self.PWM_level)
