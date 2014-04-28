@@ -34,6 +34,7 @@ class LED:
     dim_Uptimehr = 4
     dim_Downtimehr = 5
     localTime=time.localtime()
+    sched = Scheduler()
     def __init__(self):
         self.dim_Cyclesecs=self.dim_Ontimesecs/(self.PWM_max-self.PWM_min)
         self.net_Override=0
@@ -41,7 +42,14 @@ class LED:
         self.PWM_level = 255
         self.modCount = 0
         self.PWM_min = 30
-
+        
+        self.sched.add_interval_job(STATE.arduinoPinwriteoutAll, seconds = 1)
+        self.sched.add_interval_job(STATE.timestatuscheck, seconds = 10)
+        self.sched.add_cron_job(STATE.scheddimCycleUp,  hour=STATE.dim_Uptimehr)
+        self.sched.add_cron_job(STATE.scheddimCycleDown,  hour=STATE.dim_Downtimehr)
+        self.sched.start()
+        self.sched.print_jobs()
+        
         if LED.config.has_section('LightConfig'):
             pass
         else:
@@ -131,13 +139,8 @@ class LED:
 
 STATE=LED()
 
-sched = Scheduler()
-sched.add_interval_job(STATE.arduinoPinwriteoutAll, seconds = 1)
-sched.add_interval_job(STATE.timestatuscheck, seconds = 10)
-sched.add_cron_job(STATE.scheddimCycleUp,  hour=STATE.dim_Uptimehr)
-sched.add_cron_job(STATE.scheddimCycleDown,  hour=STATE.dim_Downtimehr)
-sched.start()
-sched.print_jobs()
+
+
 
 
 @route("/")
