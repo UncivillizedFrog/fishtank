@@ -123,22 +123,22 @@ class LED:
     def scheddimCycleUp(self):
         self.modding = 1
         self.modCount = -1
-        self.sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(self.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
 
     def scheddimCycleDown(self):
         self.modding = 1
         self.modCount = 1
-        self.sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(self.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
 
     def netdimCycleUp(self):
         self.modding = 1
         self.modCount = -1
-        self.sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(self.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
 
     def netdimCycleDown(self):
         self.modding = 1
         self.modCount = 1
-        self.sched.add_interval_job(LED.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(self.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
 
 
 STATE=LED()
@@ -209,7 +209,7 @@ def save_config():
     with open('tanksettings.cfg', 'wb') as configfile:
         STATE.config.write(configfile)
     redirect ("/")
-    
+
 @post("/set_dim")
 def set_dim():
     print request.forms.get("dim_time")
