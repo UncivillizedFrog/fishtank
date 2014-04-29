@@ -187,7 +187,7 @@ def dim_on():
     if STATE.net_Override == 0:
         redirect("/")
         pass
-    if STATE.PWM_level == STATE.PWM_max:
+    elif STATE.PWM_level == STATE.PWM_max:
         STATE.netdimCycleUp()
     redirect("/")
 
@@ -196,7 +196,7 @@ def dim_off():
     if STATE.net_Override == 0:
         redirect("/")
         pass
-    if STATE.PWM_level == STATE.PWM_min:
+    elif STATE.PWM_level == STATE.PWM_min:
         STATE.netdimCycleDown()
     redirect("/")
 
@@ -224,16 +224,16 @@ def set_brightness():
 
 @post ("/set_uptime")
 def set_uptime():
-    sched.unschedule_func(STATE.scheddimCycleUp)
+    STATE.sched.unschedule_func(STATE.scheddimCycleUp)
     STATE.dim_Uptimehr = int(request.forms.get("dimup_time"))
-    sched.add_cron_job(STATE.scheddimCycleUp,  hour=STATE.dim_Uptimehr)
+    STATE.sched.add_cron_job(STATE.scheddimCycleUp,  hour=STATE.dim_Uptimehr)
     redirect("/")
 
 @post ("/set_downtime")
 def set_downtime():
-    sched.unschedule_func(STATE.scheddimCycleDown)
+    STATE.sched.unschedule_func(STATE.scheddimCycleDown)
     STATE.dim_Downtimehr = int(request.forms.get("dimdown_time"))
-    sched.add_cron_job(STATE.scheddimCycleDown, hour=STATE.dim_Downtimehr)
+    STATE.sched.add_cron_job(STATE.scheddimCycleDown, hour=STATE.dim_Downtimehr)
     redirect("/")
 
 @route('/static/:path#.+#', name='static')
