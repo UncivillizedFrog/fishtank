@@ -42,7 +42,7 @@ class LED:
         self.PWM_level = 255
         self.modCount = 0
         self.PWM_min = 30
-
+        self.modding = 0
         if LED.config.has_section('LightConfig'):
             pass
         else:
@@ -209,6 +209,7 @@ def save_config():
     with open('tanksettings.cfg', 'wb') as configfile:
         STATE.config.write(configfile)
     redirect ("/")
+    
 @post("/set_dim")
 def set_dim():
     print request.forms.get("dim_time")
