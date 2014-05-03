@@ -77,11 +77,12 @@ class LED:
         self.arduinoPinwriteoutInd(self.pwmPin6,self.PWM_level)
         self.arduinoPinwriteoutInd(self.pwmPin7,self.PWM_level)
         self.arduinoPinwriteoutInd(self.pwmPin8,self.PWM_level)
+        print "writing %d" % (self.PWM_level)
     def arduinoPinwriteoutInd(self, outpin, PWM_Levelout):
         self.targetpin = outpin
         self.writeVAR = PWM_Levelout
         outpin.write(self.writeVAR / 255.0)
-
+        
     def signalmod_PWM(self, modAmount):
         print "modding %d modAmount %d PWM_level %d pwm_min %d pwm_max %d:" % (self.modding, modAmount, self.PWM_level, self.PWM_min, self.PWM_max)
         if modAmount != 0:
@@ -96,13 +97,14 @@ class LED:
                 self.modding = 0
             elif self.PWM_level > self.PWM_min:
                 self.PWM_level += modAmount
+                print "modded to %d" % (self.PWM_level)
         elif self.modTester == 1:
             if self.PWM_level >= self.PWM_max:
                 self.PWM_level = self.PWM_max
                 self.modding = 0
             elif self.PWM_level < self.PWM_max:
-               self.PWM_level += modAmount
-
+                self.PWM_level += modAmount
+                print "modded to %d" % (self.PWM_level)
     def timestatuscheck(self):
         self.localTime=time.localtime()
         if self.net_Override == 1:
