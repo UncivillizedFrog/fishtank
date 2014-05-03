@@ -83,11 +83,11 @@ class LED:
         outpin.write(self.writeVAR / 255.0)
 
     def signalmod_PWM(self, modAmount):
+        print "modding %d modAmount %d PWM_level %d pwm_min %d pwm_max %d:" % (self.modding, modAmount, self.PWM_level, self.PWM_min, self.PWM_max)
         if modAmount != 0:
             self.modding = 1
         else:
             self.modding = 0
-        print "modding %d modAmount %d PWM_level %d pwm_min %d pwm_max %d:" % (self.modding, modAmount, self.PWM_level, self.PWM_min, self.PWM_max)
 
         self.modTester = math.copysign(1, modAmount)
         if self.modTester == -1:
@@ -124,22 +124,22 @@ class LED:
         self.modding = 1
         self.modCount = -1
         self.sched.add_interval_job(self.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.print_jobs()
 
     def scheddimCycleDown(self):
         self.modding = 1
         self.modCount = 1
         self.sched.add_interval_job(self.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
-
     def netdimCycleUp(self):
         self.modding = 1
         self.modCount = -1
         self.sched.add_interval_job(self.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
-
+        self.sched.print_jobs()
     def netdimCycleDown(self):
         self.modding = 1
         self.modCount = 1
         self.sched.add_interval_job(self.schedsignalmod_PWM, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
-
+        self.sched.print_jobs()
 
 STATE=LED()
 
