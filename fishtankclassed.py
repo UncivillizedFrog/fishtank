@@ -34,7 +34,6 @@ class LED:
     dim_Uptimehr = 4
     dim_Downtimehr = 5
     localTime=time.localtime()
-    sched = Scheduler()
     def __init__(self):
         self.dim_Cyclesecs=self.dim_Ontimesecs/(self.PWM_max-self.PWM_min)
         self.net_Override=0
@@ -43,6 +42,8 @@ class LED:
         self.modCount = 0
         self.PWM_min = 30
         self.modding = 0
+        self.sched = Scheduler()
+
         if LED.config.has_section('LightConfig'):
             pass
         else:
@@ -80,8 +81,8 @@ class LED:
         print "writing %d" % (self.PWM_level)
     def arduinoPinwriteoutInd(self, outpin, PWM_Levelout):
         self.targetpin = outpin
-        self.writeVAR = PWM_Levelout
-        outpin.write(self.writeVAR / 255.0)
+        writeVAR = PWM_Levelout
+        outpin.write(writeVAR / 255.0)
 
     def signalmod_PWM(self, modAmount):
         print "modding %d modAmount %d PWM_level %d pwm_min %d pwm_max %d:" % (self.modding, modAmount, self.PWM_level, self.PWM_min, self.PWM_max)
@@ -110,8 +111,7 @@ class LED:
     def timestatuscheck(self):
         self.localTime=time.localtime()
         if self.net_Override == 1:
-            print "%d %02d:%02d" % (self.PWM_level, self.localTime.tm_hour, self.localTime.tm_min)
-            return
+            print "Overrides Engaged, pushing %d %02d:%02d" % (self.PWM_level, self.localTime.tm_hour, self.localTime.tm_min)
         elif self.modding == 0:
             if self.localTime.tm_hour < self.dim_Uptimehr:
                self. PWM_level = self.PWM_max
@@ -119,31 +119,30 @@ class LED:
                self. PWM_level = self.PWM_min
             elif self.localTime.tm_hour >= self.dim_Downtimehr and self.localTime.tm_min > 0:
                 self.PWM_level = self.PWM_max
-            print "%d %02d:%02d" % (self.PWM_level, self.localTime.tm_hour, self.localTime.tm_min)
+            print "Overrides Disengaged, pushing %d %02d:%02d" % (self.PWM_level, self.localTime.tm_hour, self.localTime.tm_min)
     def schedsignalmod_PWM(self):
 
         self.signalmod_PWM(self.modCount)
 
     def scheddimCycleUp(self):
-        self.modding = 1
         self.modCount = -1
         self.sched.add_interval_job(lambda: self.schedsignalmod_PWM(), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
     def scheddimCycleDown(self):
-        self.modding = 1
         self.modCount = 1
         self.sched.add_interval_job(lambda: self.schedsignalmod_PWM(), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.print_jobs()
     def netdimCycleUp(self):
-        self.modding = 1
         self.modCount = -1
         self.sched.add_interval_job(lambda: self.schedsignalmod_PWM(), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
+
     def netdimCycleDown(self):
-        self.modding = 1
         self.modCount = 1
         self.sched.add_interval_job(lambda: self.schedsignalmod_PWM(), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
+
 
 STATE=LED()
 
