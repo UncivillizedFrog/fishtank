@@ -123,21 +123,21 @@ class LED:
 
     def scheddimCycleUp(self):
         modCount = -1
-        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
     def scheddimCycleDown(self):
         modCount = 1
-        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
     def netdimCycleUp(self):
         modCount = -1
-        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
     def netdimCycleDown(self):
         modCount = 1
-        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
 
