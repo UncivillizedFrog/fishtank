@@ -120,27 +120,24 @@ class LED:
             elif self.localTime.tm_hour >= self.dim_Downtimehr and self.localTime.tm_min > 0:
                 self.PWM_level = self.PWM_max
             print "Overrides Disengaged, pushing %d %02d:%02d" % (self.PWM_level, self.localTime.tm_hour, self.localTime.tm_min)
-    def schedsignalmod_PWM(self):
-
-        self.signalmod_PWM(self.modCount)
 
     def scheddimCycleUp(self):
-        self.modCount = -1
-        self.sched.add_interval_job(lambda: self.schedsignalmod_PWM(), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        modCount = -1
+        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
     def scheddimCycleDown(self):
-        self.modCount = 1
-        self.sched.add_interval_job(lambda: self.schedsignalmod_PWM(), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        modCount = 1
+        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
     def netdimCycleUp(self):
-        self.modCount = -1
-        self.sched.add_interval_job(lambda: self.schedsignalmod_PWM(), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        modCount = -1
+        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
     def netdimCycleDown(self):
-        self.modCount = 1
-        self.sched.add_interval_job(lambda: self.schedsignalmod_PWM(), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        modCount = 1
+        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
 
@@ -159,7 +156,7 @@ def release_override():
 
     STATE.net_Override = 0
     if STATE.modding == 1:
-        STATE.sched.unschedule_func(STATE.schedsignalmod_PWM)
+        STATE.sched.unschedule_func(STATE.signalmod_PWM)
         STATE.modding = 0
     redirect("/")
 
