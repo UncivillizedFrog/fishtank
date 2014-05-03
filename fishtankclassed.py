@@ -100,7 +100,7 @@ class LED:
             if self.PWM_level >= self.PWM_max:
                 self.PWM_level = self.PWM_max
                 self.modding = 0
-            elif self.PWM_level <= self.PWM_max:
+            elif self.PWM_level < self.PWM_max:
                self.PWM_level += modAmount
 
     def timestatuscheck(self):
@@ -115,7 +115,7 @@ class LED:
                self. PWM_level = self.PWM_min
             elif self.localTime.tm_hour >= self.dim_Downtimehr and self.localTime.tm_min > 0:
                 self.PWM_level = self.PWM_max
-        print "%d %02d:%02d" % (self.PWM_level, self.localTime.tm_hour, self.localTime.tm_min)
+            print "%d %02d:%02d" % (self.PWM_level, self.localTime.tm_hour, self.localTime.tm_min)
     def schedsignalmod_PWM(self):
 
         self.signalmod_PWM(self.modCount)
@@ -156,7 +156,7 @@ def release_override():
 
     STATE.net_Override = 0
     if STATE.modding == 1:
-        sched.unschedule_func(STATE.schedsignalmod_PWM)
+        STATE.sched.unschedule_func(STATE.schedsignalmod_PWM)
         STATE.modding = 0
     redirect("/")
 
@@ -171,16 +171,18 @@ def turn_on():
     if STATE.net_Override == 0:
         redirect("/")
         pass
-    STATE.PWM_level = STATE.PWM_min
-    redirect("/")
+    else:
+        STATE.PWM_level = STATE.PWM_min
+        redirect("/")
 
 @route("/turn_off")
 def turn_off():
    if STATE.net_Override == 0:
         redirect("/")
         pass
-   STATE.PWM_level = STATE.PWM_max
-   redirect("/")
+   else:
+        STATE.PWM_level = STATE.PWM_max
+        redirect("/")
 
 @route("/dim_on")
 def dim_on():
