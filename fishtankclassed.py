@@ -82,7 +82,7 @@ class LED:
         self.targetpin = outpin
         self.writeVAR = PWM_Levelout
         outpin.write(self.writeVAR / 255.0)
-        
+
     def signalmod_PWM(self, modAmount):
         print "modding %d modAmount %d PWM_level %d pwm_min %d pwm_max %d:" % (self.modding, modAmount, self.PWM_level, self.PWM_min, self.PWM_max)
         if modAmount != 0:
@@ -90,18 +90,20 @@ class LED:
         else:
             self.modding = 0
 
-        self.modTester = math.copysign(1, modAmount)
-        if self.modTester == -1:
+        modTester = math.copysign(1, modAmount)
+        if modTester == -1:
             if self.PWM_level <= self.PWM_min:
                 self.PWM_level = self.PWM_min
                 self.modding = 0
+                print "quo"
             elif self.PWM_level > self.PWM_min:
                 self.PWM_level += modAmount
                 print "modded to %d" % (self.PWM_level)
-        elif self.modTester == 1:
+        elif modTester == 1:
             if self.PWM_level >= self.PWM_max:
                 self.PWM_level = self.PWM_max
                 self.modding = 0
+                print "quo"
             elif self.PWM_level < self.PWM_max:
                 self.PWM_level += modAmount
                 print "modded to %d" % (self.PWM_level)
