@@ -144,7 +144,10 @@ class LED:
 STATE=LED()
 
 
-
+def foonetdimCycleUp():
+    modCount = -1
+    STATE.sched.add_interval_job(lambda: STATE.signalmod_PWM(modCount), seconds=STATE.dim_Cyclesecs, max_runs=(STATE.PWM_max-STATE.PWM_min) + 1)
+    STATE.sched.print_jobs()
 
 
 @route("/")
@@ -190,7 +193,7 @@ def dim_on():
         redirect("/")
         pass
     elif STATE.PWM_level == STATE.PWM_max:
-        STATE.netdimCycleUp()
+        foonetdimCycleUp()
     redirect("/")
 
 @route("/dim_off")
