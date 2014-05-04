@@ -60,7 +60,7 @@ class LED:
             self.dim_Uptimehr = LED.config.getint('LightConfig', 'uptime')
             self.dim_Downtimehr = LED.config.getint('LightConfig', 'downtime')
             self.PWM_min = LED.config.getint('LightConfig', 'pwminit')
-            self.dim_Cyclesecs = LED.config.getint('LightConfig', 'cyclesecs')
+            self.dim_Ontimesecs = LED.config.getint('LightConfig', 'cyclesecs')
             self.PWM_max = 255
         self.dim_Cyclesecs=self.dim_Ontimesecs/(self.PWM_max-self.PWM_min)
         self.sched.add_interval_job(self.arduinoPinwriteoutAll, seconds = 1)
