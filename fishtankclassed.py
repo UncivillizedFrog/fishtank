@@ -83,7 +83,7 @@ class LED:
         self.targetpin = outpin
         writeVAR = PWM_Levelout
         outpin.write(writeVAR / 255.0)
-        print 'write level %d outpin %d' % (PWM_Levelout, outpin)
+        print 'write level %d outpin %d' % (PWM_Levelout)
 
     def signalmod_PWM(self, modAmount):
         print "modding %d modAmount %d PWM_level %d pwm_min %d pwm_max %d:" % (self.modding, modAmount, self.PWM_level, self.PWM_min, self.PWM_max)
