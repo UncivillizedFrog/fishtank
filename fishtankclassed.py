@@ -65,8 +65,8 @@ class LED:
         self.dim_Cyclesecs=self.dim_Ontimesecs/(self.PWM_max-self.PWM_min)
         self.sched.add_interval_job(self.arduinoPinwriteoutAll, seconds = 1)
         self.sched.add_interval_job(self.timestatuscheck, seconds = 10)
-        self.sched.add_cron_job(self.scheddimCycleUp,  hour=self.dim_Uptimehr)
-        self.sched.add_cron_job(self.scheddimCycleDown,  hour=self.dim_Downtimehr)
+        self.sched.add_cron_job(self.scheddimCycleUp, name = "SchedDimUp", hour=self.dim_Uptimehr)
+        self.sched.add_cron_job(self.scheddimCycleDown, name= "SchedDimDown", hour=self.dim_Downtimehr)
         self.sched.start()
         self.sched.print_jobs()
     def arduinoPinwriteoutAll(self):
@@ -124,38 +124,51 @@ class LED:
 
     def scheddimCycleUp(self):
         modCount = -1
-        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, name ="SigChange", max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
     def scheddimCycleDown(self):
         modCount = 1
-        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, name ="SigChange", max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
     def netdimCycleUp(self):
         modCount = -1
-        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, name ="SigChange", max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
     def netdimCycleDown(self):
         modCount = 1
-        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, name ="SigChange", max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
+
 
 
 STATE=LED()
 
-
+'''def OverrideIdle(self):
+        idleCount = 0
+        idleCount += 1
+        if idleCount == 2:
+           release_override() '''
 
 @route("/")
 def default():
     return template("main_template", current_level=STATE.PWM_level, modding=STATE.modding, dim_time=STATE.dim_Ontimesecs)
 
+
+
 @route ("/release_override")
+
+def unschedule(jobname):
+    jobs = STATE.sched.get_jobs()
+    for job in jobs:
+        if job.name == jobname:
+            STATE.sched.unschedule_job(job)
 def release_override():
 
     STATE.net_Override = 0
     if STATE.modding == 1:
-        STATE.sched.unschedule_func(STATE.signalmod_PWM)
+        unschedule("SigChange")
         STATE.modding = 0
     redirect("/")
 
@@ -225,16 +238,18 @@ def set_brightness():
 
 @post ("/set_uptime")
 def set_uptime():
-    STATE.sched.unschedule_func(STATE.scheddimCycleUp)
+    unschedule("SigChange")
+    unschedule("SchedDimUp")
     STATE.dim_Uptimehr = int(request.forms.get("dimup_time"))
-    STATE.sched.add_cron_job(STATE.scheddimCycleUp,  hour=STATE.dim_Uptimehr)
+    STATE.sched.add_cron_job(STATE.scheddimCycleUp, name = "SchedDimUp", hour=STATE.dim_Uptimehr)
     redirect("/")
 
 @post ("/set_downtime")
 def set_downtime():
-    STATE.sched.unschedule_func(STATE.scheddimCycleDown)
+    unschedule("SigChange")
+    unschedule("SchedDimDown")
     STATE.dim_Downtimehr = int(request.forms.get("dimdown_time"))
-    STATE.sched.add_cron_job(STATE.scheddimCycleDown, hour=STATE.dim_Downtimehr)
+    STATE.sched.add_cron_job(STATE.scheddimCycleDown, name = "SchedDimDown", hour=STATE.dim_Downtimehr)
     redirect("/")
 
 @route('/static/:path#.+#', name='static')
