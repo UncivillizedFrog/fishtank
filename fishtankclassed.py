@@ -35,7 +35,7 @@ class LED:
     dim_Downtimehr = 5
     localTime=time.localtime()
     def __init__(self):
-        self.dim_Cyclesecs=self.dim_Ontimesecs/(self.PWM_max-self.PWM_min)
+
         self.net_Override=0
         self.targetpin=LED.boardPin
         self.PWM_level = 255
@@ -62,7 +62,7 @@ class LED:
             self.PWM_min = LED.config.getint('LightConfig', 'pwminit')
             self.dim_Cyclesecs = LED.config.getint('LightConfig', 'cyclesecs')
             self.PWM_max = 255
-
+        self.dim_Cyclesecs=self.dim_Ontimesecs/(self.PWM_max-self.PWM_min)
         self.sched.add_interval_job(self.arduinoPinwriteoutAll, seconds = 1)
         self.sched.add_interval_job(self.timestatuscheck, seconds = 10)
         self.sched.add_cron_job(self.scheddimCycleUp,  hour=self.dim_Uptimehr)
