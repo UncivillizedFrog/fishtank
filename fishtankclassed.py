@@ -151,6 +151,12 @@ STATE=LED()
         if idleCount == 2:
            release_override() '''
 
+def unschedule(jobname):
+    jobs = STATE.sched.get_jobs()
+    for job in jobs:
+        if job.name == jobname:
+            STATE.sched.unschedule_job(job)
+
 @route("/")
 def default():
     return template("main_template", current_level=STATE.PWM_level, modding=STATE.modding, dim_time=STATE.dim_Ontimesecs)
@@ -159,16 +165,13 @@ def default():
 
 @route ("/release_override")
 
-def unschedule(jobname):
-    jobs = STATE.sched.get_jobs()
-    for job in jobs:
-        if job.name == jobname:
-            STATE.sched.unschedule_job(job)
+
 def release_override():
 
     STATE.net_Override = 0
     if STATE.modding == 1:
-        unschedule("SigChange")
+        killjob= "SigChange"
+        unschedule(killjob)
         STATE.modding = 0
     redirect("/")
 
@@ -238,16 +241,20 @@ def set_brightness():
 
 @post ("/set_uptime")
 def set_uptime():
-    unschedule("SigChange")
-    unschedule("SchedDimUp")
+    killjob= "SigChange"
+    killjob1= "SchedDimUp"
+    unschedule(killjob)
+    unschedule(killjob1)
     STATE.dim_Uptimehr = int(request.forms.get("dimup_time"))
     STATE.sched.add_cron_job(STATE.scheddimCycleUp, name = "SchedDimUp", hour=STATE.dim_Uptimehr)
     redirect("/")
 
 @post ("/set_downtime")
 def set_downtime():
-    unschedule("SigChange")
-    unschedule("SchedDimDown")
+    killjob= "SigChange"
+    killjob1= "SchedDimDown"
+    unschedule(killjob)
+    unschedule(killjob1)
     STATE.dim_Downtimehr = int(request.forms.get("dimdown_time"))
     STATE.sched.add_cron_job(STATE.scheddimCycleDown, name = "SchedDimDown", hour=STATE.dim_Downtimehr)
     redirect("/")
