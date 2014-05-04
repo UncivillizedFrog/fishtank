@@ -63,7 +63,7 @@ class LED:
             self.dim_Cyclesecs = LED.config.getint('LightConfig', 'cyclesecs')
             self.PWM_max = 255
 
-        self.sched.add_interval_job(self.arduinoPinwriteoutAll, seconds = 3)
+        self.sched.add_interval_job(self.arduinoPinwriteoutAll, seconds = 1)
         self.sched.add_interval_job(self.timestatuscheck, seconds = 10)
         self.sched.add_cron_job(self.scheddimCycleUp,  hour=self.dim_Uptimehr)
         self.sched.add_cron_job(self.scheddimCycleDown,  hour=self.dim_Downtimehr)
@@ -123,31 +123,28 @@ class LED:
 
     def scheddimCycleUp(self):
         modCount = -1
-        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
     def scheddimCycleDown(self):
         modCount = 1
-        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
     def netdimCycleUp(self):
         modCount = -1
-        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
     def netdimCycleDown(self):
         modCount = 1
-        self.sched.add_interval_job(lambda: self.signalmod_PWM(modCount), seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
+        self.sched.add_interval_job(self.signalmod_PWM, modAmount = modCount, seconds=self.dim_Cyclesecs, max_runs=(self.PWM_max-self.PWM_min) + 1)
         self.sched.print_jobs()
 
 
 STATE=LED()
 
 
-def foonetdimCycleUp():
-    modCount = -1
-    STATE.sched.add_interval_job(lambda: STATE.signalmod_PWM(modCount), seconds=STATE.dim_Cyclesecs, max_runs=(STATE.PWM_max-STATE.PWM_min) + 1)
-    STATE.sched.print_jobs()
+
 
 
 @route("/")
@@ -193,7 +190,7 @@ def dim_on():
         redirect("/")
         pass
     elif STATE.PWM_level == STATE.PWM_max:
-        foonetdimCycleUp()
+        STATE.netdimCycleUp()
     redirect("/")
 
 @route("/dim_off")
